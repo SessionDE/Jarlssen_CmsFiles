@@ -1,0 +1,5 @@
+code                    app/code/community/Jarlssen/CmsFiles
+Jarlssen_CmsFiles.xml   app/etc/modules/Jarlssen_CmsFiles.xml
+css/cmsfiles.css        skin/adminhtml/default/default/cmsfiles.css
+layout/cmsfiles.xml     app/design/adminhtml/default/default/layout/cmsfiles.xml
+shell/cmsFiles.php      shell/cmsFiles.php

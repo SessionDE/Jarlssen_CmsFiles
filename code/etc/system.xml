@@ -1,0 +1,46 @@
+<config>
+    <sections>
+        <cms translate="label" module="cms">
+            <groups>
+                <files translate="label">
+                    <label>CMS as Files</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>500</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <override translate="label">
+                            <label>Enable Developer file override</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>cms/dev/file_override</config_path>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </override>
+                        <path_page translate="label">
+                            <label>Path to CMS pages</label>
+                            <frontend_type>text</frontend_type>
+                            <config_path>cms/path/pages</config_path>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </path_page>
+                        <path_block translate="label">
+                            <label>Path to CMS blocks</label>
+                            <frontend_type>text</frontend_type>
+                            <config_path>cms/path/blocks</config_path>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </path_block>
+                    </fields>
+                </files>
+            </groups>
+        </cms>
+    </sections>
+</config>

@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Jarlssen_CmsFiles>
+            <version>0.1</version>
+        </Jarlssen_CmsFiles>
+    </modules>
+    <global>
+        <blocks>
+            <jarlssen_cmsfiles>
+                <class>Jarlssen_CmsFiles_Block</class>
+            </jarlssen_cmsfiles>
+            <adminhtml>
+                <rewrite>
+                    <!--
+                        Rewriting the grid to add the Merge column, row colours and legend
+                    -->
+                    <cms_block_grid>Jarlssen_CmsFiles_Block_Adminhtml_Grid_Block</cms_block_grid>
+                    <cms_page_grid>Jarlssen_CmsFiles_Block_Adminhtml_Grid_Page</cms_page_grid>
+                </rewrite>
+            </adminhtml>
+        </blocks>
+        <helpers>
+            <jarlssen_cmsfiles>
+                <class>Jarlssen_CmsFiles_Helper</class>
+            </jarlssen_cmsfiles>
+        </helpers>
+        <events>
+            <!--
+                These events annotate the CMS blocks and pages with file modification status
+            -->
+            <cms_page_load_after>
+                <observers>
+                    <jarlssen_cmsfiles_load_page_file>
+                        <class>Jarlssen_CmsFiles_Model_Observer</class>
+                        <method>loadCmsPage</method>
+                    </jarlssen_cmsfiles_load_page_file>
+                </observers>
+            </cms_page_load_after>
+            <cms_block_load_after>
+                <observers>
+                    <jarlssen_cmsfiles_load_block_file>
+                        <class>Jarlssen_CmsFiles_Model_Observer</class>
+                        <method>loadCmsBlock</method>
+                    </jarlssen_cmsfiles_load_block_file>
+                </observers>
+            </cms_block_load_after>
+        </events>
+        <models>
+            <!--
+                This is only to correct an annoying upstream omission where $_eventPrefix is not set.
+                This is needed for the cms_block_load_after event to work
+            -->
+            <cms>
+                <rewrite>
+                    <block>Jarlssen_CmsFiles_Model_Block</block>
+                </rewrite>
+            </cms>
+        </models>
+    </global>
+
+    <admin>
+        <routers>
+            <adminhtml>
+                <args>
+                    <!--
+                        This controller provides the merge-to-file and merge-to-db actions
+                    -->
+                    <modules>
+                        <jarlssen_cmsfiles after="Mage_Adminhtml">Jarlssen_CmsFiles_Adminhtml</jarlssen_cmsfiles>
+                    </modules>
+                </args>
+            </adminhtml>
+        </routers>
+    </admin>
+
+    <adminhtml>
+        <layout>
+            <updates>
+                <!--
+                    Adds CSS to admin pages to show CMS row modification status and a developer mode warning
+                -->
+                <jarlssen_cmsfiles>
+                    <file>cmsfiles.xml</file>
+                </jarlssen_cmsfiles>
+            </updates>
+        </layout>
+    </adminhtml>
+
+    <!-- Configuration options -->
+    <default>
+        <cms>
+            <path>
+                <pages>cms/page</pages>
+                <blocks>cms/block</blocks>
+            </path>
+            <dev>
+                <file_override>1</file_override>
+            </dev>
+        </cms>
+    </default>
+</config>
+
