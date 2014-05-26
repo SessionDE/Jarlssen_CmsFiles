@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<layout>
+    <adminhtml_cms_page_index>
+        <reference name="head">
+            <action method="addItem">
+                <type>js_css</type>
+                <name>prototype/windows/themes/default.css</name>
+            </action>
+            <action method="addJs">
+                <name>mage/adminhtml/cmsfiles.js</name>
+            </action>
+
+            <action method="addCss">
+                <name>lib/prototype/windows/themes/magento.css</name>
+            </action>
+
+            <action method="addCss">
+                <name>cmsfiles.css</name>
+            </action>
+
+        </reference>
+    </adminhtml_cms_page_index>
+
+
+    <adminhtml_cms_block_index>
+        <reference name="head">
+            <action method="addItem">
+                <type>js_css</type>
+                <name>prototype/windows/themes/default.css</name>
+            </action>
+            <action method="addJs">
+                <name>mage/adminhtml/cmsfiles.js</name>
+            </action>
+
+            <action method="addCss">
+                <name>lib/prototype/windows/themes/magento.css</name>
+            </action>
+
+            <action method="addCss">
+                <name>cmsfiles.css</name>
+            </action>
+        </reference>
+    </adminhtml_cms_block_index>
+
+
+    <adminhtml_cmsfiles_template_index>
+        <reference name="root">
+            <action method="setTemplate"><template>empty.phtml</template></action>
+        </reference>
+        <reference name="content">
+
+        </reference>
+
+    </adminhtml_cmsfiles_template_index>
+
+    <default>
+        <reference name="notifications">
+            <block type="jarlssen_cmsfiles/adminhtml_notifications" name="config_notifications"></block>
+        </reference>
+    </default>
+</layout>
