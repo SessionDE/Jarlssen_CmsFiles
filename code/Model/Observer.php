@@ -11,8 +11,8 @@ class Jarlssen_CmsFiles_Model_Observer
     protected function annotate(Varien_Object $obj, $path)
     {
         if(file_exists($path)) {
-            Mage::log(strtotime($obj->getUpdateTime()));
-            Mage::log(filemtime($path));
+            // Mage::log(strtotime($obj->getUpdateTime()));
+            // Mage::log(filemtime($path));
 
             if((int)filemtime($path) > (int)strtotime($obj->getUpdateTime()))
                 $obj->setMergeState(Jarlssen_CmsFiles_Helper_Data::STATE_FILE_NEWER);
@@ -22,8 +22,9 @@ class Jarlssen_CmsFiles_Model_Observer
             if((bool)Mage::getStoreConfig(Jarlssen_CmsFiles_Helper_Data::CONF_CMS_DEV_OVERRIDE)) {
                 $obj->setContent(file_get_contents($path));
             }
-        } else
+        } else {
             $obj->setMergeState(Jarlssen_CmsFiles_Helper_Data::STATE_NO_FILE);
+        }
     }
 
 
@@ -31,13 +32,47 @@ class Jarlssen_CmsFiles_Model_Observer
     {
         /** @var Mage_Cms_Model_Page $page */
         $page = $observer->getEvent()->getDataObject();
-        $this->annotate($page, Mage::helper('jarlssen_cmsfiles')->getPath(Jarlssen_CmsFiles_Helper_Data::CONF_CMS_PAGE_PATH, $page->getIdentifier()));
+        if ($page->getIdentifier()) {
+            $this->annotate($page, $this->_getPath(Jarlssen_CmsFiles_Helper_Data::CONF_CMS_PAGE_PATH, $page));
+        }
     }
 
     public function loadCmsBlock(Varien_Event_Observer $observer)
     {
         /** @var Mage_Cms_Model_Block $page */
         $block = $observer->getEvent()->getDataObject();
-        $this->annotate($block, Mage::helper('jarlssen_cmsfiles')->getPath(Jarlssen_CmsFiles_Helper_Data::CONF_CMS_BLOCK_PATH, $block->getIdentifier()));
+        if ($block->getIdentifier()) {
+            $this->annotate($block, $this->_getPath(Jarlssen_CmsFiles_Helper_Data::CONF_CMS_BLOCK_PATH, $block));
+        }
+    }
+
+    /*
+     * Check the file for current store id and default store id
+     *
+     * @param string $configPath
+     * @param Mage_Core_Model_Abstract $obj
+     * @return string
+     */
+    protected function _getPath($configPath, $obj)
+    {
+        $helper = Mage::helper('jarlssen_cmsfiles');
+
+        // if admin panel, get the latest updated file
+        if (Mage::app()->getStore()->getId() == 0) {
+            $filename = null;
+            foreach (array_merge(array(0), $obj->getStoreId()) as $storeId) {
+                $path = $helper->getPath($configPath, $obj, $storeId, true);
+                if (is_null($filename) OR filemtime($path) > filemtime($filename)) {
+                    $filename = $path;
+                }
+            }
+        } else {
+            $filename = $helper->getPath($configPath, $obj, Mage::app()->getStore()->getId(), true);
+            if (!$filename) {
+                $filename = $helper->getPath($configPath, $obj, 0);
+            }
+        }
+
+        return $filename;
     }
 }

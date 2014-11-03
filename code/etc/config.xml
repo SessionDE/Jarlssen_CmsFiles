@@ -93,6 +93,7 @@
             <path>
                 <pages>cms/page</pages>
                 <blocks>cms/block</blocks>
+                <save_in_template_folder>1</save_in_template_folder>
             </path>
             <dev>
                 <file_override>1</file_override>

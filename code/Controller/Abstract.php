@@ -8,46 +8,72 @@
 
 abstract class Jarlssen_CmsFiles_Controller_Abstract extends Mage_Adminhtml_Controller_Action
 {
-    abstract protected function path($identifier);
+    abstract protected function path($identifier, $storeId = null);
 
     abstract protected function model();
 
     public function fileAction()
     {
-        try {
-            $id = $this->getRequest()->getParam('id');
-            if($id and $obj = $this->model()->load($id)) {
-                $path = $this->path($obj->getIdentifier());
-                if(!is_writable(dirname($path)))
-                    throw new Exception("$path directory is not writable");
-                if(file_put_contents($path, $obj->getContent()))
-                    Mage::getModel('adminhtml/session')->addSuccess("$path successfully written");
-                touch($path, strtotime($obj->getUpdateTime()));
-            } else
-                throw new Exception("Could not load CMS model");
-        } catch(Exception $e) {
-            Mage::getModel('adminhtml/session')->addError($e->getMessage());
+        $id = $this->getRequest()->getParam('id');
+        if($id and $obj = $this->model()->load($id)) {
+
+            if ($this->getRequest()->getParam('store_id')) {
+                $store = Mage::app()->getStore($this->getRequest()->getParam('store_id'));
+                $storeIds = array($store->getId());
+            } else {
+                $storeIds = $obj->getStoreId();
+            }
+
+            foreach ($storeIds as $storeId) {
+                try {
+                    $path = $this->path($obj, $storeId);
+                    if(!is_writable(dirname($path)))
+                        throw new Exception("$path directory is not writable");
+                    if(file_put_contents($path, $obj->getContent()))
+                        Mage::getModel('adminhtml/session')->addSuccess("$path successfully written");
+                    touch($path, strtotime($obj->getUpdateTime()));
+                } catch(Exception $e) {
+                    Mage::getModel('adminhtml/session')->addError($e->getMessage());
+                }
+            }
+        } else {
+            throw new Exception("Could not load CMS model");
         }
         $this->_redirectReferer();
     }
 
     public function dbAction()
     {
-        try {
-            $id = $this->getRequest()->getParam('id');
-            if($id and $obj = $this->model()->load($id)) {
-                $path = $this->path($obj->getIdentifier());
-                if(!is_readable($path))
-                    throw new Exception("$path is not readable");
-                $content = file_get_contents($path);
-                if(!$content)
-                    throw new Exception("$path contains no content");
-                $obj->setContent($content)->save();
-                Mage::getModel('adminhtml/session')->addSuccess("{$obj->getIdentifier()} successfully updated from file");
-            } else
-                throw new Exception("Could not load CMS model");
-        } catch(Exception $e) {
-            Mage::getModel('adminhtml/session')->addError($e->getMessage());
+        $id = $this->getRequest()->getParam('id');
+        if($id and $obj = $this->model()->load($id)) {
+
+            // get the latest updated file
+            $storeIds = array_merge(array(0), $obj->getStoreId());
+            $path = null;
+            foreach ($storeIds as $storeId) {
+                $tempPath = $this->path($obj, $storeId);
+                if (is_null($path) OR filemtime($tempPath) > filemtime($path)) {
+                    $path = $tempPath;
+                }
+            }
+
+            if ($path) {
+                try {
+                    if(!is_readable($path))
+                        throw new Exception("$path is not readable");
+                    $content = file_get_contents($path);
+                    if(!$content)
+                        throw new Exception("$path contains no content");
+                    $obj->setContent($content)->save();
+                    Mage::getModel('adminhtml/session')->addSuccess("{$obj->getIdentifier()} successfully updated from file");
+
+                } catch(Exception $e) {
+                    Mage::getModel('adminhtml/session')->addError($e->getMessage());
+                }
+            }
+
+        } else {
+            throw new Exception("Could not load CMS model");
         }
         $this->_redirectReferer();
     }

@@ -11,13 +11,26 @@ class Jarlssen_CmsFiles_Block_Adminhtml_Grid_Renderer extends Mage_Adminhtml_Blo
     public function render(Varien_Object $row)
     {
         $model = $row instanceof Mage_Cms_Model_Block ? "block" : "page";
-        $fileUrl = Mage::helper('adminhtml')->getUrl("*/cmsfiles_merge_$model/file", array("id"=>$row->getId()));
-        $html = "<a href=\"$fileUrl\">&gt;&nbsp;file</a>";
 
-        if($row->getMergeState() != Jarlssen_CmsFiles_Helper_Data::STATE_NO_FILE) {
-            $dbUrl = Mage::helper('adminhtml')->getUrl("*/cmsfiles_merge_$model/db", array("id"=>$row->getId()));
-            $html .= "<br><a href=\"$dbUrl\">&gt;&nbsp;db</a>";
-        }
+        $html = '';
+        // foreach ($row->getStoreId() as $storeId) {
+            $fileUrl = Mage::helper('adminhtml')->getUrl("*/cmsfiles_merge_$model/file", array(
+                'id' => $row->getId(),
+                // 'store_id' => $storeId,
+            ));
+            $html .= "<a href=\"$fileUrl\">&gt;&nbsp;Create files</a>";
+
+            if($row->getMergeState() != Jarlssen_CmsFiles_Helper_Data::STATE_NO_FILE) {
+                $dbUrl = Mage::helper('adminhtml')->getUrl("*/cmsfiles_merge_$model/db", array(
+                    'id' => $row->getId(),
+                    // 'store_id' => $storeId,
+                ));
+                $html .= "<br><a href=\"$dbUrl\">&gt;&nbsp;Update DB</a>";
+            }
+
+            $html .= '<br>';
+        // }
+
         return $html;
     }
 }

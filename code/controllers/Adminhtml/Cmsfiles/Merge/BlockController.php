@@ -8,9 +8,9 @@
 
 class Jarlssen_CmsFiles_Adminhtml_Cmsfiles_Merge_BlockController extends Jarlssen_CmsFiles_Controller_Abstract
 {
-    protected function path($identifier)
+    protected function path($obj, $storeId = null)
     {
-        return Mage::helper('jarlssen_cmsfiles')->getPath(Jarlssen_CmsFiles_Helper_Data::CONF_CMS_BLOCK_PATH, $identifier);
+        return Mage::helper('jarlssen_cmsfiles')->getPath(Jarlssen_CmsFiles_Helper_Data::CONF_CMS_BLOCK_PATH, $obj, $storeId);
     }
 
     protected function model()

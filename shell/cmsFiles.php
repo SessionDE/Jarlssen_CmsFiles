@@ -34,36 +34,56 @@ class Jarlssen_CmsFiles_Script extends Mage_Shell_Abstract
 
     protected function getObjects()
     {
-        $results = array();
+        $connection = Mage::getModel('core/resource')->getConnection('read');
+        $helper     = Mage::helper('jarlssen_cmsfiles');
+        $results    = array();
 
         if(is_null($this->_type) or $this->_type == 'page') {
-            $path = Mage::helper('jarlssen_cmsfiles')->getPath(Jarlssen_CmsFiles_Helper_Data::CONF_CMS_PAGE_PATH);
-
-            $connection = Mage::getModel('core/resource')->getConnection('read');
             $select = $connection->select()
                 ->from('cms_page', array(
                     '*',
-                    "concat_ws('/', '$path',cms_page.identifier) as file_path",
-                    "trim('cms/page') as model"
+                    "trim('cms/page') as model",
+                    'page_id as id'
                 ));
+
+            $select->joinInner(
+                array('ps' => Mage::getModel('core/resource')->getTableName('cms/page_store')),
+                'ps.page_id = cms_page.page_id',
+                array('store_id')
+            );
+
             if(!is_null($this->_identifier))
                 $select->where('identifier = ?', $this->_identifier);
-            $results += $connection->fetchAll($select);
+
+            $results = $connection->fetchAll($select);
+
+            foreach ($results as &$result) {
+                $result['file_path'] = $helper->getPath(Jarlssen_CmsFiles_Helper_Data::CONF_CMS_PAGE_PATH, $result['identifier'], $result['store_id']);
+            }
         }
 
         if(is_null($this->_type) or $this->_type == 'block') {
-            $path = Mage::helper('jarlssen_cmsfiles')->getPath(Jarlssen_CmsFiles_Helper_Data::CONF_CMS_BLOCK_PATH);
-
-            $connection = Mage::getModel('core/resource')->getConnection('read');
             $select = $connection->select()
                 ->from('cms_block', array(
                     '*',
-                    "concat_ws('/', '$path',cms_block.identifier) as file_path",
-                    "trim('cms/block') as model"
+                    "trim('cms/block') as model",
+                    'block_id as id'
                 ));
+
+            $select->joinInner(
+                array('bs' => Mage::getModel('core/resource')->getTableName('cms/block_store')),
+                'bs.block_id = cms_block.block_id',
+                array('store_id')
+            );
+
             if(!is_null($this->_identifier))
                 $select->where('identifier = ?', $this->_identifier);
-            $results += $connection->fetchAll($select);
+
+            $results = $connection->fetchAll($select);
+
+            foreach ($results as &$result) {
+                $result['file_path'] = $helper->getPath(Jarlssen_CmsFiles_Helper_Data::CONF_CMS_BLOCK_PATH, $result['identifier'], $result['store_id']);
+            }
         }
 
         return $results;
@@ -83,7 +103,8 @@ class Jarlssen_CmsFiles_Script extends Mage_Shell_Abstract
                     if(file_exists($cms['file_path'])) {
                         $fileContent = file_get_contents($cms['file_path']);
                         Mage::getModel($cms['model'])
-                            ->load($cms['identifier'], 'identifier')
+                            //->load($cms['identifier'], 'identifier')
+                            ->load($cms['id'])
                             ->setContent($fileContent)
                             ->save();
                     } else
