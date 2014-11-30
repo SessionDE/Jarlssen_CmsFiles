@@ -1,0 +1,15 @@
+{
+    "name": "jarlssen/cmsfiles",
+    "description": "Jarlssen_CmsFiles will allow you to create files (versioned with your favourite SCM tool) in a path of your choice",
+    "homepage": "https://github.com/Jarlssen/Jarlssen_CmsFiles",
+    "type": "magento-module", 
+    "authors": [
+        {
+            "name": "Igor Solovyov",
+            "email": "info@sessiondigital.de"
+        }
+    ],
+    "require": {
+	"magento-hackathon/magento-composer-installer": "*"
+    }
+}
