@@ -101,7 +101,7 @@
                 <save_in_template_folder>1</save_in_template_folder>
             </path>
             <dev>
-                <file_override>1</file_override>
+                <file_override>0</file_override>
             </dev>
         </cms>
     </default>
