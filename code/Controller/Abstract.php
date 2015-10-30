@@ -1,5 +1,5 @@
 <?php
- /**
+/**
  * @author Oliver Giles <oliver.giles@jarlssen.de>
  * @copyright Copyright © 2014, Jarlssen GmbH
  * @license Proprietary. All rights reserved.
@@ -45,6 +45,7 @@ abstract class Jarlssen_CmsFiles_Controller_Abstract extends Mage_Adminhtml_Cont
     public function dbAction()
     {
         $id = $this->getRequest()->getParam('id');
+        /** @var Mage_Cms_Model_Page $obj */
         if($id and $obj = $this->model()->load($id)) {
 
             // get the latest updated file
@@ -64,7 +65,13 @@ abstract class Jarlssen_CmsFiles_Controller_Abstract extends Mage_Adminhtml_Cont
                     $content = file_get_contents($path);
                     if(!$content)
                         throw new Exception("$path contains no content");
-                    $obj->setContent($content)->save();
+
+                    $obj->setContent($content);
+
+                    Mage::register(Jarlssen_CmsFiles_Helper_Hierarchy::REGISTRY_DISABLE_HIERARCHY, true);
+                    $obj->save();
+                    Mage::unregister(Jarlssen_CmsFiles_Helper_Hierarchy::REGISTRY_DISABLE_HIERARCHY);
+
                     Mage::getModel('adminhtml/session')->addSuccess("{$obj->getIdentifier()} successfully updated from file");
 
                 } catch(Exception $e) {

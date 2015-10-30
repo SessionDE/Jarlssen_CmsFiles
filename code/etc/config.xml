@@ -24,6 +24,11 @@
             <jarlssen_cmsfiles>
                 <class>Jarlssen_CmsFiles_Helper</class>
             </jarlssen_cmsfiles>
+            <enterprise_cms>
+                <rewrite>
+                    <hierarchy>Jarlssen_CmsFiles_Helper_Hierarchy</hierarchy>
+                </rewrite>
+            </enterprise_cms>
         </helpers>
         <events>
             <!--
@@ -101,4 +106,3 @@
         </cms>
     </default>
 </config>
-
